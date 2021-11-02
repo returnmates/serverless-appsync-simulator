@@ -23,81 +23,89 @@ const FLAGS = {
 const decToBin = (dec) => parseInt((dec >>> 0).toString(2), 2);
 
 const convertMySQLResponseToColumnMetaData = (rows) => {
-  return rows.map((row) => {
-    // @TODO: Add for the following fields
-    // arrayBaseColumnType,
-    // isCaseSensitive,
-    // isCurrency,
-    // currency,
-    // precision,
-    // scale,
-    // schemaName,
-    return {
-      isAutoIncrement:
-        decToBin(row.flags & FLAGS.AUTO_INCREMENT) === FLAGS.AUTO_INCREMENT,
-      label: row.name,
-      name: row.name,
-      nullable: decToBin(row.flags && FLAGS.NOT_NULL) !== FLAGS.NOT_NULL,
-      type: row.columnType,
-      typeName: Object.keys(Types)
-        .find((key) => Types[key] === row.columnType)
-        .toUpperCase(),
-      isSigned: decToBin(row.flags & FLAGS.UNSIGNED) !== FLAGS.UNSIGNED,
-      autoIncrement:
-        decToBin(row.flags & FLAGS.AUTO_INCREMENT) === FLAGS.AUTO_INCREMENT,
-      tableName: row._buf
-        .slice(row._tableStart, row._tableStart + row._tableLength)
-        .toString(),
-    };
-  });
+  if (rows && rows.length > 0) {
+    return rows.map((row) => {
+      // @TODO: Add for the following fields
+      // arrayBaseColumnType,
+      // isCaseSensitive,
+      // isCurrency,
+      // currency,
+      // precision,
+      // scale,
+      // schemaName,
+      return {
+        isAutoIncrement:
+          decToBin(row.flags & FLAGS.AUTO_INCREMENT) === FLAGS.AUTO_INCREMENT,
+        label: row.name,
+        name: row.name,
+        nullable: decToBin(row.flags && FLAGS.NOT_NULL) !== FLAGS.NOT_NULL,
+        type: row.columnType,
+        typeName: Object.keys(Types)
+          .find((key) => Types[key] === row.columnType)
+          .toUpperCase(),
+        isSigned: decToBin(row.flags & FLAGS.UNSIGNED) !== FLAGS.UNSIGNED,
+        autoIncrement:
+          decToBin(row.flags & FLAGS.AUTO_INCREMENT) === FLAGS.AUTO_INCREMENT,
+        tableName: row._buf
+          .slice(row._tableStart, row._tableStart + row._tableLength)
+          .toString(),
+      };
+    });
+  }
+  return [];
 };
 const convertSQLResponseToRDSRecords = (rows) => {
   const records = [];
 
-  rows.forEach((dbObject) => {
-    const record = [];
-    Object.keys(dbObject).forEach((key) => {
-      record.push(
-        dbObject[key] === null
-          ? { isNull: true, null: true }
-          : typeof dbObject[key] === 'string'
-          ? { stringValue: dbObject[key] }
-          : typeof dbObject[key] === 'number'
-          ? { longValue: dbObject[key] }
-          : { stringValue: dbObject[key] },
-      );
+  if (rows && rows.length > 0) {
+    rows.forEach((dbObject) => {
+      const record = [];
+      Object.keys(dbObject).forEach((key) => {
+        record.push(
+          dbObject[key] === null
+            ? { isNull: true, null: true }
+            : typeof dbObject[key] === 'string'
+            ? { stringValue: dbObject[key] }
+            : typeof dbObject[key] === 'number'
+            ? { longValue: dbObject[key] }
+            : { stringValue: dbObject[key] },
+        );
+      });
+      records.push(record);
     });
-    records.push(record);
-  });
+  }
   return records;
 };
 
 const convertPostgresSQLResponseToColumnMetaData = (rows) => {
-  return rows.map((row) => {
-    const typeName =
-      Object.keys(pgTypes.builtins).find(
-        (d) => pgTypes.builtins[d] === row.dataTypeID,
-      ) ?? 'UNKNOWN';
-    // @TODO: Add support for the following fields
-    // isAutoIncrement,
-    // nullable,
-    // isSigned,
-    // autoIncrement,
-    // tableName,
-    // arrayBaseColumnType,
-    // isCaseSensitive,
-    // isCurrency,
-    // currency,
-    // precision,
-    // scale,
-    // schemaName,
-    return {
-      label: row.name,
-      name: row.name,
-      type: row.dataTypeID,
-      typeName,
-    };
-  });
+  if (rows && rows.length > 0) {
+    return rows.map((row) => {
+      const typeName =
+        Object.keys(pgTypes.builtins).find(
+          (d) => pgTypes.builtins[d] === row.dataTypeID,
+        ) ?? 'UNKNOWN';
+      // @TODO: Add support for the following fields
+      // isAutoIncrement,
+      // nullable,
+      // isSigned,
+      // autoIncrement,
+      // tableName,
+      // arrayBaseColumnType,
+      // isCaseSensitive,
+      // isCurrency,
+      // currency,
+      // precision,
+      // scale,
+      // schemaName,
+      return {
+        label: row.name,
+        name: row.name,
+        type: row.dataTypeID,
+        typeName,
+      };
+    });
+  }
+  return [];
 };
 
 const injectVariables = (statement, req) => {

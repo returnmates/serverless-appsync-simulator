@@ -36,7 +36,7 @@ export default class HttpDataLoader {
 
   async load(req) {
     try {
-      const { data, status, headers } = await axios.request({
+      const config = {
         baseURL: this.config.endpoint,
         validateStatus: false,
         url: req.resourcePath,
@@ -45,7 +45,10 @@ export default class HttpDataLoader {
         paramsSerializer,
         method: req.method.toLowerCase(),
         data: req.params.body,
-      });
+      };
+
+      console.log({ config });
+      const { data, status, headers } = await axios.request(config);
 
       return {
         headers,
