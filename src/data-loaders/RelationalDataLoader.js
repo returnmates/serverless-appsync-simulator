@@ -219,9 +219,9 @@ export default class RelationalDataLoader {
         });
       }
       return JSON.stringify(res);
-    } catch (e) {
-      console.log(e);
-      return e;
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
   }
 }
