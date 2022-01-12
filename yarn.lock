@@ -1706,9 +1706,9 @@ all-contributors-cli@^6.19.0:
     pify "^5.0.0"
     yargs "^15.0.1"
 
-"amplify-appsync-simulator@git+https://github.com/returnmates/amplify-appsync-simulator":
+"amplify-appsync-simulator@https://github.com/returnmates/amplify-appsync-simulator.git":
   version "1.27.7"
-  resolved "git+https://github.com/returnmates/amplify-appsync-simulator#907ce86c261335ae0a0498fb0ebca984f4f610ba"
+  resolved "https://github.com/returnmates/amplify-appsync-simulator.git#0e012d65d5a6fed7ad6349ca6b8f0a4f02ae5123"
   dependencies:
     amplify-velocity-template "1.4.5"
     aws-sdk "^2.963.0"
