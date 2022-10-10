@@ -297,6 +297,7 @@ class ServerlessAppSyncSimulator {
     const node = {
       ...this.serverless.service.resources,
       toBeResolved,
+      Parameters: {},
     };
     const evaluator = new NodeEvaluator(node, this.resourceResolvers);
     const result = evaluator.evaluateNodes();
